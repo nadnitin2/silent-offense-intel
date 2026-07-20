@@ -1,6 +1,6 @@
 {
     "node_identity": "vm774288012",
-    "aggregated_dropped_packets": 4037,
+    "aggregated_dropped_packets": 4080,
     "intelligence": {
         "police_blacklist": {
             "ip_count": 15,
@@ -68,8 +68,8 @@
         },
         "abuse_global_blacklist": {
             "ip_count": 25936,
-            "packets_dropped": 1361,
-            "bytes_dropped": "69496",
+            "packets_dropped": 1404,
+            "bytes_dropped": "71932",
             "members": [
                 "111.26.63.85",
                 "45.156.128.6",
