@@ -45,7 +45,6 @@
 </head>
 <body>
 
-    <!-- Main Dynamic Information Header -->
     <div class="main-header">
         <div class="container">
             <h1><i class="fas fa-shield-halved text-warning"></i> SilentOffense Threat Matrix</h1>
@@ -55,10 +54,9 @@
     </div>
 
     <div class="container">
-        <!-- Live Node Matrix Grid -->
         <div class="row g-4 justify-content-center">
             
-            <!-- Server 1 Card -->
+            <!-- Node 1: E2E Cluster -->
             <div class="col-md-6 col-lg-5">
                 <div class="card card-custom p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -83,7 +81,7 @@
                 </div>
             </div>
 
-            <!-- Server 2 Card -->
+            <!-- Node 2: WebEye Edge -->
             <div class="col-md-6 col-lg-5">
                 <div class="card card-custom p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -110,90 +108,50 @@
 
         </div>
 
-        <!-- Action Grid for VPS Users - Simplified & Secure -->
         <div class="row mt-4 justify-content-center">
             <div class="col-lg-10 text-center">
-                <!-- Live Blacklist Download -->
                 <a href="output/master_blacklist.txt" class="btn btn-dark btn-lg me-2 my-2" target="_blank">
                     <i class="fas fa-download"></i> Get Live Blacklist Feed
                 </a>
-                
-                <!-- Copy JSON API Link -->
-                <button class="btn btn-outline-dark btn-lg me-2 my-2" onclick="navigator.clipboard.writeText(window.location.href + 'output/dashboard_metrics.json'); alert('Public GitHub JSON API Endpoint Copied!');">
+                <button class="btn btn-outline-dark btn-lg me-2 my-2" onclick="navigator.clipboard.writeText(window.location.href + 'output/dashboard_metrics.json'); alert('Public JSON API Link Copied!');">
                     <i class="fas fa-code"></i> Copy Telemetry JSON API
                 </button>
-
-                <!-- Direct GitHub Community Inquiry (No Forms, No Login Stress) -->
                 <a href="https://github.com/nadnitin2/silent-offense-intel/issues" class="btn btn-primary btn-lg my-2" target="_blank">
                     <i class="fab fa-github"></i> Contact / Drop Git Inquiry
                 </a>
             </div>
         </div>
 
-        <!-- Security Awareness Blog Section -->
         <div class="row justify-content-center mt-5">
             <div class="col-lg-10">
                 <div class="card card-custom p-4 border-top border-4 border-danger">
-                    <h3 class="mb-4 text-dark">
-                        <i class="fas fa-book-open text-danger me-2"></i> 
-                        SysAdmin Chronicles: Hardening Your VPS Against Automated Exploits
-                    </h3>
-                    
+                    <h3 class="mb-4 text-dark"><i class="fas fa-book-open text-danger me-2"></i> SysAdmin Chronicles: Hardening Your VPS Against Automated Exploits</h3>
                     <article class="mb-4">
                         <h5 class="text-primary"><i class="fas fa-microchip me-2"></i> 1. The Architectural Edge of IPSet vs. Standard Rules</h5>
-                        <p class="text-secondary small">
-                            Many administrators blindly append thousands of malicious IPs directly into standard <code>iptables</code> linear chains. This creates an architectural bottleneck: every incoming network packet must check against every rule sequentially, skyrocketing kernel CPU utilization during heavy brute-force attacks.
-                        </p>
-                        <p class="text-secondary small">
-                            By switching to <strong>IPSet</strong>, the framework stores addresses in a highly optimized hash table structure. The lookup complexity drops to a constant <code>O(1)</code> time constraint, allowing your server to instantly drop packets from blacklisted bad actors without degrading network performance.
-                        </p>
-                    </article>
-                    
-                    <hr class="my-3">
-
-                    <article class="mb-4">
-                        <h5 class="text-success"><i class="fas fa-key me-2"></i> 2. Moving Beyond the Default Port 22 Traps</h5>
-                        <p class="text-secondary small">
-                            Automated malicious bots scan millions of public IP addresses specifically targeting the default SSH port 22. Leaving this parameter stock exposes your infrastructure to continuous log spam and dictionary attacks.
-                        </p>
-                        <div class="p-3 bg-light rounded border mb-2">
-                            <strong class="d-block small text-dark"><i class="fas fa-shield-halved"></i> Recommended Security Checklist:</strong>
-                            <ul class="mb-0 small text-secondary ps-3">
-                                <li>Migrate the internal SSH daemon handling configuration to a non-standard high port.</li>
-                                <li>Disable root login mechanisms entirely within <code>/etc/ssh/sshd_config</code>.</li>
-                                <li>Enforce strict public-key cryptographic authentication while completely disabling plain text passwords.</li>
-                            </ul>
-                        </div>
-                    </article>
-
-                    <hr class="my-3">
-
-                    <article>
-                        <h5 class="text-warning"><i class="fas fa-user-ninja me-2"></i> 3. Implementing Automated Patrol Ingestion</h5>
-                        <p class="text-secondary small mb-0">
-                            Static firewalls eventually decay as malicious actors change their network blocks. A resilient security stack must deploy proactive real-time behavioral parsing engines like <strong>Fail2ban</strong>. By dynamically analyzing authentication failures and immediately jail-banning offenders at the raw transport layer, your cluster maintains an active, self-healing perimeter.
-                        </p>
+                        <p class="text-secondary small">By switching to IPSet, lookup complexity drops to an optimized constant O(1) constraints, dropping malicious vectors efficiently.</p>
                     </article>
                 </div>
             </div>
         </div>
 
         <footer class="text-center my-5 text-muted small">
-            <p>SilentOffense Intelligence Networks © 2026. Data updates incrementally via cron pipeline automation.</p>
+            <p>SilentOffense Intelligence Networks © 2026.</p>
         </footer>
     </div>
 
-    <!-- Secure Dynamic Mapping Engine -->
+    <!-- Exact matching engine for original per_node_telemetry structure -->
     <script>
         function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
+            if (!bytes || bytes === 0 || isNaN(bytes)) {
+                if (typeof bytes === 'string' && bytes.includes('K')) return bytes;
+                return '0 B';
+            }
             const k = 1024;
             const sizes = ['B', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-   
         async function fetchMetrics() {
             try {
                 const response = await fetch('output/dashboard_metrics.json?v=' + Date.now());
@@ -202,32 +160,34 @@
                 if (data && data.per_node_telemetry) {
                     const telemetry = data.per_node_telemetry;
 
-                    // Match e2e-32-133 Server Metrics Safely
+                    // Parse Node 1: e2e-32-133
                     if (telemetry["e2e-32-133"]) {
-                        document.getElementById('e2e-packets').innerText = telemetry["e2e-32-133"].packets_blocked || 0;
-                        document.getElementById('e2e-bytes').innerText = telemetry["e2e-32-133"].bytes_saved || '0 B';
-                        document.getElementById('e2e-pool').innerText = telemetry["e2e-32-133"].local_pool_size || 0;
-                        const status = document.getElementById('e2e-status');
-                        status.innerText = "ONLINE";
-                        status.className = 'badge badge-online';
+                        const node = telemetry["e2e-32-133"];
+                        document.getElementById('e2e-packets').innerText = node.packets_blocked ?? 0;
+                        document.getElementById('e2e-bytes').innerText = formatBytes(node.bytes_saved);
+                        document.getElementById('e2e-pool').innerText = node.local_pool_size ?? 0;
+                        
+                        const statusBadge = document.getElementById('e2e-status');
+                        statusBadge.innerText = "ONLINE";
+                        statusBadge.className = "badge badge-online";
                     }
 
-                    // Match vm774288012 Server Metrics Safely
+                    // Parse Node 2: vm774288012
                     if (telemetry["vm774288012"]) {
-                        document.getElementById('webeye-packets').innerText = telemetry["vm774288012"].packets_blocked || 0;
-                        document.getElementById('webeye-bytes').innerText = telemetry["vm774288012"].bytes_saved || '0 B';
-                        document.getElementById('webeye-pool').innerText = telemetry["vm774288012"].local_pool_size || 0;
-                        const status = document.getElementById('webeye-status');
-                        status.innerText = "ONLINE";
-                        status.className = 'badge badge-online';
+                        const node = telemetry["vm774288012"];
+                        document.getElementById('webeye-packets').innerText = node.packets_blocked ?? 0;
+                        document.getElementById('webeye-bytes').innerText = formatBytes(node.bytes_saved);
+                        document.getElementById('webeye-pool').innerText = node.local_pool_size ?? 0;
+                        
+                        const statusBadge = document.getElementById('webeye-status');
+                        statusBadge.innerText = "ONLINE";
+                        statusBadge.className = "badge badge-online";
                     }
                 }
             } catch (error) {
-                console.error("Ingestion channel processing error:", error);
+                console.error("Ingestion data parsing error:", error);
             }
         }
-        
-   
         fetchMetrics();
     </script>
 </body>
