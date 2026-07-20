@@ -1,11 +1,11 @@
 {
     "node_identity": "vm774288012",
-    "aggregated_dropped_packets": 2697,
+    "aggregated_dropped_packets": 2839,
     "intelligence": {
         "police_blacklist": {
             "ip_count": 14,
-            "packets_dropped": 2163,
-            "bytes_dropped": "130K",
+            "packets_dropped": 2264,
+            "bytes_dropped": "136K",
             "members": [
                 "80.64.27.85",
                 "103.106.103.218",
@@ -25,8 +25,8 @@
         },
         "censys_blocked": {
             "ip_count": 35,
-            "packets_dropped": 6,
-            "bytes_dropped": "280",
+            "packets_dropped": 8,
+            "bytes_dropped": "1236",
             "members": [
                 "64.227.108.146",
                 "185.247.137.0/24",
@@ -67,8 +67,8 @@
         },
         "abuse_global_blacklist": {
             "ip_count": 22580,
-            "packets_dropped": 528,
-            "bytes_dropped": "23807",
+            "packets_dropped": 567,
+            "bytes_dropped": "25483",
             "members": [
                 "1.227.228.131",
                 "49.124.155.177",
