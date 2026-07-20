@@ -1,9 +1,12 @@
 {
-  "node_name": "vm774288012",
-  "last_sync_utc": "2026-07-20 18:45:02 UTC",
-  "node_metrics": {
-    "dropped_packets": 7294,
-    "dropped_bytes": 415744,
-    "local_pool_size": 25936
+  "node_identity": "vm774288012",
+  "aggregated_dropped_packets": 7469,
+  "intelligence": {
+    "police_blacklist": {
+      "ip_count": 25936,
+      "packets_dropped": 7469,
+      "bytes_dropped": "425984",
+      "members": []
+    }
   }
 }
