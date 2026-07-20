@@ -1,16 +1,20 @@
 {
-  "cluster": {
-    "e2e_server": {
-      "status": "OFFLINE",
-      "packets": 0,
-      "bytes": 0,
-      "pool": 0
+    "cluster_status": "OPERATIONAL",
+    "last_updated_utc": "2026-07-20 18:50:09 UTC",
+    "global_summary": {
+        "total_blacklisted_ips": 22615,
+        "total_attacks_neutralized": 7294
     },
-    "webeye_server": {
-      "status": "ONLINE",
-      "packets": 7294,
-      "bytes": 415744,
-      "pool": 25936
+    "per_node_telemetry": {
+        "vm774288012": {
+            "packets_blocked": 7294,
+            "bytes_saved": 415744,
+            "local_pool_size": 25936
+        },
+        "e2e-32-133": {
+            "packets_blocked": 0,
+            "bytes_saved": 0,
+            "local_pool_size": 0
+        }
     }
-  }
 }

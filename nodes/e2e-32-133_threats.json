@@ -1,0 +1,12 @@
+{
+  "node_identity": "e2e-32-133",
+  "aggregated_dropped_packets": 3213,
+  "intelligence": {
+    "police_blacklist": {
+      "ip_count": 22756,
+      "packets_dropped": 3213,
+      "bytes_dropped": "166912",
+      "members": []
+    }
+  }
+}
