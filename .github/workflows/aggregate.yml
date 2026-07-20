@@ -1,0 +1,73 @@
+name: SilentOffense Threat Intelligence Aggregator
+
+on:
+  push:
+    paths:
+      - 'nodes/**.json'
+  schedule:
+    - cron: '30 * * * *' # Runs at the bottom of every hour automatically
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  aggregate-threats:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository Source
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-python-version: '3.10'
+
+      - name: Aggregate Edge Node Metrics
+        run: |
+          python -c "
+          import os
+          import json
+          
+          master_ips = set()
+          nodes_dir = 'nodes'
+          
+          if os.path.exists(nodes_dir):
+              for filename in os.listdir(nodes_dir):
+                  if filename.endswith('.json'):
+                      file_path = os.path.join(nodes_dir, filename)
+                      try:
+                          with open(file_path, 'r') as f:
+                              data = json.load(f)
+                              # Loop through kernel ipsets defined in core setup
+                              intelligence = data.get('intelligence', {})
+                              for set_name, set_data in intelligence.items():
+                                  members = set_data.get('members', [])
+                                  for ip in members:
+                                      if ip.strip():
+                                          master_ips.add(ip.strip())
+                      except Exception as e:
+                          print(f'Error reading {filename}: {e}')
+          
+          # Output the sanitized unique list
+          os.makedirs('output', exist_ok=True)
+          with open('output/master_blacklist.txt', 'w') as f:
+              for ip in sorted(master_ips):
+                  f.write(f'{ip}\n')
+                  
+          print(f'Successfully aggregated {len(master_ips)} unique high-risk threat vectors.')
+          "
+
+      - name: Commit and Push Compiled Master Intelligence
+        run: |
+          git config --global user.name "SilentOffense Bot"
+          git config --global user.email "bot@silent-offense.local"
+          git add output/master_blacklist.txt
+          
+          # Check if there are differences to avoid empty loop commits
+          if git diff --staged --quiet; then
+              echo "No new intelligence vectors discovered. System in idle state."
+          else
+              git commit -m "Auto-compiled global master threat database [Skip CI]"
+              git push
+          fi
