@@ -1,12 +1,12 @@
 {
-  "node_identity": "e2e-32-133",
-  "aggregated_dropped_packets": 3492,
-  "intelligence": {
-    "police_blacklist": {
-      "ip_count": 22756,
-      "packets_dropped": 3492,
-      "bytes_dropped": "179200",
-      "members": []
+    "node_name": "e2e-32-133",
+    "last_sync_utc": "2026-07-20 19:03:28 UTC",
+    "node_metrics": {
+        "dropped_packets": 3541,
+        "dropped_bytes": 181248,
+        "local_pool_size": 22756
+    },
+    "intelligence": {
+        "combined_unique_members": []
     }
-  }
 }
