@@ -1,15 +1,16 @@
 {
     "node_identity": "vm774288012",
-    "aggregated_dropped_packets": 4080,
+    "aggregated_dropped_packets": 4222,
     "intelligence": {
         "police_blacklist": {
-            "ip_count": 15,
-            "packets_dropped": 2665,
-            "bytes_dropped": "160K",
+            "ip_count": 18,
+            "packets_dropped": 2683,
+            "bytes_dropped": "161K",
             "members": [
                 "80.64.27.85",
                 "103.106.103.218",
                 "114.121.248.251",
+                "116.110.146.0",
                 "103.146.159.100",
                 "103.204.167.40",
                 "31.214.248.58",
@@ -21,6 +22,8 @@
                 "152.57.132.141",
                 "46.8.78.131",
                 "170.0.212.3",
+                "116.110.213.247",
+                "171.231.194.226",
                 "222.108.147.76"
             ]
         },
@@ -68,8 +71,8 @@
         },
         "abuse_global_blacklist": {
             "ip_count": 25936,
-            "packets_dropped": 1404,
-            "bytes_dropped": "71932",
+            "packets_dropped": 1528,
+            "bytes_dropped": "78906",
             "members": [
                 "111.26.63.85",
                 "45.156.128.6",
