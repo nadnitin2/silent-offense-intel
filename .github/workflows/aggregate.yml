@@ -4,7 +4,7 @@ on:
   schedule:
     # Triggers at minute 15 of every hour to seamlessly ingest node telemetry
     - cron: '15 * * * *'
-  workflow_dispatch: # Allows you to manually click "Run workflow" from GitHub UI
+  workflow_dispatch: # Allows manual trigger from GitHub UI anytime
 
 jobs:
   aggregate-threats:
@@ -28,11 +28,12 @@ jobs:
         run: |
           git config --global user.name "SilentOffense-Bot"
           git config --global user.email "bot@silentoffense.local"
-          git add output/master_blacklist.txt
           
-          # Commit updates strictly if new unique threat vectors were extracted
+          # Stage both the blacklist output and the new json dashboard
+          git add output/master_blacklist.txt output/dashboard_metrics.json
+          
           if ! git diff --cached --quiet; then
-            git commit -m "Automated Sync: Filtered and appended new unique vectors [Skip CI]"
+            git commit -m "Automated Sync: Multi-node metrics dashboard and blacklist updated [Skip CI]"
             git push
           else
             echo "Zero intelligence delta detected. Skipping push infrastructure matrix."
