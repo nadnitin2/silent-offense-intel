@@ -20,26 +20,30 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Ingest Remote Telemetry Payload
+      - name: Ingest Remote Telemetry Payload Safely
         run: |
           mkdir -p nodes output
           NODE="${{ github.event.client_payload.node_name }}"
+          SYNC_TIME="${{ github.event.client_payload.last_sync_utc }}"
+          PKTS=${{ github.event.client_payload.node_metrics.dropped_packets }}
+          BYTES=${{ github.event.client_payload.node_metrics.dropped_bytes }}
+          POOL=${{ github.event.client_payload.node_metrics.local_pool_size }}
           
-          # If triggered by server webhook, rewrite the file in the exact expected structure
+          # Maintain exact structural compliance with native server payloads
           if [ -n "$NODE" ]; then
-            echo "[INFO] Syncing architecture payload for node: $NODE"
+            echo "[INFO] Commencing payload stream injection for node: $NODE"
             cat <<EOF > "nodes/${NODE}_threats.json"
           {
-            "node_identity": "$NODE",
-            "aggregated_dropped_packets": ${{ github.event.client_payload.node_metrics.dropped_packets }},
-            "intelligence": {
-              "police_blacklist": {
-                "ip_count": ${{ github.event.client_payload.node_metrics.local_pool_size }},
-                "packets_dropped": ${{ github.event.client_payload.node_metrics.dropped_packets }},
-                "bytes_dropped": "${{ github.event.client_payload.node_metrics.dropped_bytes }}",
-                "members": []
+              "node_name": "$NODE",
+              "last_sync_utc": "$SYNC_TIME",
+              "node_metrics": {
+                  "dropped_packets": $PKTS,
+                  "dropped_bytes": $BYTES,
+                  "local_pool_size": $POOL
+              },
+              "intelligence": {
+                  "combined_unique_members": []
               }
-            }
           }
           EOF
           fi
@@ -49,7 +53,7 @@ jobs:
           if [ -f ".github/scripts/aggregate.py" ]; then
             python .github/scripts/aggregate.py
           else
-            echo "[ERROR] Main pipeline processor aggregate.py not found!"
+            echo "[ERROR] Pipeline logic fault: aggregate.py script instance is missing!"
             exit 1
           fi
 
@@ -63,5 +67,5 @@ jobs:
             git commit -m "Automated Sync: Multi-node metrics dashboard and blacklist updated [Skip CI]"
             git push origin main
           else
-            echo "[INFO] Dynamic vectors match state repository. Skipping operational push execution."
+            echo "[INFO] Telemetry matrix aligns with current state. Skipping operations deployment."
           fi
