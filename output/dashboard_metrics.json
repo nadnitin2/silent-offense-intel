@@ -1,6 +1,6 @@
 {
     "cluster_status": "OPERATIONAL",
-    "last_updated_utc": "2026-07-20 19:45:08 UTC",
+    "last_updated_utc": "2026-07-20 19:48:31 UTC",
     "global_summary": {
         "total_blacklisted_ips": 22615,
         "total_attacks_neutralized": 13280
