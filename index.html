@@ -141,7 +141,7 @@
 
     <!-- Exact matching engine for original per_node_telemetry structure -->
     <script>
-        function formatBytes(bytes) {
+    function formatBytes(bytes) {
             if (!bytes || bytes === 0 || isNaN(bytes)) {
                 if (typeof bytes === 'string' && bytes.includes('K')) return bytes;
                 return '0 B';
@@ -152,15 +152,25 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        async function fetchMetrics() {
+       async function fetchMetrics() {
             try {
-                const response = await fetch('output/dashboard_metrics.json?v=' + Date.now());
+                // Force headers to bypass GitHub CDN edge layers and browser storage caching
+                const fetchOptions = {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                };
+                
+                // Append high-precision timestamp payload query parameter to enforce absolute cache busting
+                const response = await fetch('output/dashboard_metrics.json?nocache=' + new Date().getTime(), fetchOptions);
                 const data = await response.json();
                 
                 if (data && data.per_node_telemetry) {
                     const telemetry = data.per_node_telemetry;
 
-                    // Parse Node 1: e2e-32-133
+                    // Stream Ingestion for Node 1: e2e-32-133
                     if (telemetry["e2e-32-133"]) {
                         const node = telemetry["e2e-32-133"];
                         document.getElementById('e2e-packets').innerText = node.packets_blocked ?? 0;
@@ -172,7 +182,7 @@
                         statusBadge.className = "badge badge-online";
                     }
 
-                    // Parse Node 2: vm774288012
+                    // Stream Ingestion for Node 2: vm774288012
                     if (telemetry["vm774288012"]) {
                         const node = telemetry["vm774288012"];
                         document.getElementById('webeye-packets').innerText = node.packets_blocked ?? 0;
@@ -185,10 +195,11 @@
                     }
                 }
             } catch (error) {
-                console.error("Ingestion data parsing error:", error);
+                console.error("Fail-safe matrix pipeline collection exception:", error);
             }
         }
         fetchMetrics();
+        setInterval(fetchMetrics, 30000);
     </script>
 </body>
 </html>
