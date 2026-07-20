@@ -15,77 +15,42 @@ jobs:
       - name: Checkout Repository Components
         uses: actions/checkout@v4
 
-      - name: Create Structure and Ingest Remote Telemetry Payload
+      - name: Setup Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Ingest Remote Telemetry Payload
         run: |
           mkdir -p nodes output
-          
-          # Capture payload fields passed securely via repository dispatch interface
           NODE="${{ github.event.client_payload.node_name }}"
-          SYNC_TIME="${{ github.event.client_payload.last_sync_utc }}"
-          PKTS="${{ github.event.client_payload.node_metrics.dropped_packets }}"
-          BYTES="${{ github.event.client_payload.node_metrics.dropped_bytes }}"
-          POOL="${{ github.event.client_payload.node_metrics.local_pool_size }}"
           
-          # Safeguard against manual workflow_dispatch triggers without payloads
+          # If triggered by server webhook, rewrite the file in the exact expected structure
           if [ -n "$NODE" ]; then
-            echo "[INFO] Processing decentralized stream injection for node: $NODE"
+            echo "[INFO] Syncing architecture payload for node: $NODE"
             cat <<EOF > "nodes/${NODE}_threats.json"
           {
-            "node_name": "$NODE",
-            "last_sync_utc": "$SYNC_TIME",
-            "node_metrics": {
-              "dropped_packets": $PKTS,
-              "dropped_bytes": $BYTES,
-              "local_pool_size": $POOL
-            }
-          }
-          EOF
-          fi
-
-      - name: Process Matrix and Compile Unified Schema
-        run: |
-          # 1. Fallback default configurations if node payloads haven't checked in yet
-          E2E_PKTS=0; E2E_BYTES=0; E2E_POOL=0; E2E_STATUS="OFFLINE"
-          WEB_PKTS=0; WEB_BYTES=0; WEB_POOL=0; WEB_STATUS="OFFLINE"
-          
-          # 2. Extract values dynamically using bash and basic parsing (avoids strict python dependencies)
-          if [ -f "nodes/e2e-32-133_threats.json" ]; then
-            E2E_PKTS=$(grep '"dropped_packets"' nodes/e2e-32-133_threats.json | awk -F: '{print $2}' | tr -d ' ,')
-            E2E_BYTES=$(grep '"dropped_bytes"' nodes/e2e-32-133_threats.json | awk -F: '{print $2}' | tr -d ' ,')
-            E2E_POOL=$(grep '"local_pool_size"' nodes/e2e-32-133_threats.json | awk -F: '{print $2}' | tr -d ' ,')
-            E2E_STATUS="ONLINE"
-          fi
-
-          if [ -f "nodes/vm774288012_threats.json" ]; then
-            WEB_PKTS=$(grep '"dropped_packets"' nodes/vm774288012_threats.json | awk -F: '{print $2}' | tr -d ' ,')
-            WEB_BYTES=$(grep '"dropped_bytes"' nodes/vm774288012_threats.json | awk -F: '{print $2}' | tr -d ' ,')
-            WEB_POOL=$(grep '"local_pool_size"' nodes/vm774288012_threats.json | awk -F: '{print $2}' | tr -d ' ,')
-            WEB_STATUS="ONLINE"
-          fi
-
-          # 3. Generate clean structural JSON schema compatible with index.html frontend engine
-          cat <<EOF > output/dashboard_metrics.json
-          {
-            "cluster": {
-              "e2e_server": {
-                "status": "$E2E_STATUS",
-                "packets": $E2E_PKTS,
-                "bytes": $E2E_BYTES,
-                "pool": $E2E_POOL
-              },
-              "webeye_server": {
-                "status": "$WEB_STATUS",
-                "packets": $WEB_PKTS,
-                "bytes": $WEB_BYTES,
-                "pool": $WEB_POOL
+            "node_identity": "$NODE",
+            "aggregated_dropped_packets": ${{ github.event.client_payload.node_metrics.dropped_packets }},
+            "intelligence": {
+              "police_blacklist": {
+                "ip_count": ${{ github.event.client_payload.node_metrics.local_pool_size }},
+                "packets_dropped": ${{ github.event.client_payload.node_metrics.dropped_packets }},
+                "bytes_dropped": "${{ github.event.client_payload.node_metrics.dropped_bytes }}",
+                "members": []
               }
             }
           }
           EOF
-          
-          # 4. Generate a placeholder or static output for the master blacklist file download link
-          if [ ! -f "output/master_blacklist.txt" ]; then
-            echo "# SilentOffense Unified Threat Intel Feed" > output/master_blacklist.txt
+          fi
+
+      - name: Execute Native Aggregator Script
+        run: |
+          if [ -f ".github/scripts/aggregate.py" ]; then
+            python .github/scripts/aggregate.py
+          else
+            echo "[ERROR] Main pipeline processor aggregate.py not found!"
+            exit 1
           fi
 
       - name: Commit and Push Compiled Assets back to Repository
@@ -94,10 +59,9 @@ jobs:
           git config --global user.email "bot@silentoffense.local"
           git add nodes/*.json output/*.json output/*.txt
           
-          # Enforce conditional commit blocks to suppress execution faults if data remains unchanged
           if ! git diff --cached --quiet; then
             git commit -m "Automated Sync: Multi-node metrics dashboard and blacklist updated [Skip CI]"
             git push origin main
           else
-            echo "[INFO] Structural matrix matches state repository. Skipping operational push execution."
+            echo "[INFO] Dynamic vectors match state repository. Skipping operational push execution."
           fi
