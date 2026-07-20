@@ -193,35 +193,41 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
+   
         async function fetchMetrics() {
             try {
-                // Reads strictly from the relative path inside the repo structure; NO real server details exposed
                 const response = await fetch('output/dashboard_metrics.json?v=' + Date.now());
                 const data = await response.json();
                 
-                if (data && data.cluster) {
-                    const cluster = data.cluster;
+                if (data && data.per_node_telemetry) {
+                    const telemetry = data.per_node_telemetry;
 
-                    // Populate Server 1
-                    document.getElementById('e2e-packets').innerText = cluster.e2e_server.packets;
-                    document.getElementById('e2e-bytes').innerText = formatBytes(cluster.e2e_server.bytes);
-                    document.getElementById('e2e-pool').innerText = cluster.e2e_server.pool;
-                    const e2eStatus = document.getElementById('e2e-status');
-                    e2eStatus.innerText = cluster.e2e_server.status;
-                    e2eStatus.className = cluster.e2e_server.status === 'ONLINE' ? 'badge badge-online' : 'badge badge-offline';
+                    // Match e2e-32-133 Server Metrics Safely
+                    if (telemetry["e2e-32-133"]) {
+                        document.getElementById('e2e-packets').innerText = telemetry["e2e-32-133"].packets_blocked || 0;
+                        document.getElementById('e2e-bytes').innerText = telemetry["e2e-32-133"].bytes_saved || '0 B';
+                        document.getElementById('e2e-pool').innerText = telemetry["e2e-32-133"].local_pool_size || 0;
+                        const status = document.getElementById('e2e-status');
+                        status.innerText = "ONLINE";
+                        status.className = 'badge badge-online';
+                    }
 
-                    // Populate Server 2
-                    document.getElementById('webeye-packets').innerText = cluster.webeye_server.packets;
-                    document.getElementById('webeye-bytes').innerText = formatBytes(cluster.webeye_server.bytes);
-                    document.getElementById('webeye-pool').innerText = cluster.webeye_server.pool;
-                    const webeyeStatus = document.getElementById('webeye-status');
-                    webeyeStatus.innerText = cluster.webeye_server.status;
-                    webeyeStatus.className = cluster.webeye_server.status === 'ONLINE' ? 'badge badge-online' : 'badge badge-offline';
+                    // Match vm774288012 Server Metrics Safely
+                    if (telemetry["vm774288012"]) {
+                        document.getElementById('webeye-packets').innerText = telemetry["vm774288012"].packets_blocked || 0;
+                        document.getElementById('webeye-bytes').innerText = telemetry["vm774288012"].bytes_saved || '0 B';
+                        document.getElementById('webeye-pool').innerText = telemetry["vm774288012"].local_pool_size || 0;
+                        const status = document.getElementById('webeye-status');
+                        status.innerText = "ONLINE";
+                        status.className = 'badge badge-online';
+                    }
                 }
             } catch (error) {
                 console.error("Ingestion channel processing error:", error);
             }
         }
+        
+   
         fetchMetrics();
     </script>
 </body>
