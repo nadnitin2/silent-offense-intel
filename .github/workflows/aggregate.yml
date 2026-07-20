@@ -23,13 +23,15 @@ jobs:
       - name: Ingest Remote Telemetry Payload Safely
         run: |
           mkdir -p nodes output
+          
+          # Assign event payload parameters securely to local environment boundaries
           NODE="${{ github.event.client_payload.node_name }}"
           SYNC_TIME="${{ github.event.client_payload.last_sync_utc }}"
-          PKTS=${{ github.event.client_payload.node_metrics.dropped_packets }}
-          BYTES=${{ github.event.client_payload.node_metrics.dropped_bytes }}
-          POOL=${{ github.event.client_payload.node_metrics.local_pool_size }}
+          PKTS="${{ github.event.client_payload.node_metrics.dropped_packets }}"
+          BYTES="${{ github.event.client_payload.node_metrics.dropped_bytes }}"
+          POOL="${{ github.event.client_payload.node_metrics.local_pool_size }}"
           
-          # Maintain exact structural compliance with native server payloads
+          # Enforce defensive structural compilation for internal state parsing
           if [ -n "$NODE" ]; then
             echo "[INFO] Commencing payload stream injection for node: $NODE"
             cat <<EOF > "nodes/${NODE}_threats.json"
@@ -37,9 +39,9 @@ jobs:
               "node_name": "$NODE",
               "last_sync_utc": "$SYNC_TIME",
               "node_metrics": {
-                  "dropped_packets": $PKTS,
-                  "dropped_bytes": $BYTES,
-                  "local_pool_size": $POOL
+                  "dropped_packets": ${PKTS:-0},
+                  "dropped_bytes": ${BYTES:-0},
+                  "local_pool_size": ${POOL:-0}
               },
               "intelligence": {
                   "combined_unique_members": []
