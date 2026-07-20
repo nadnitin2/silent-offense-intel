@@ -1,9 +1,10 @@
 import os
 import json
+from datetime import datetime
 
-# Setup core paths relative to repo root
 NODES_DIR = "nodes"
 MASTER_FILE = "output/master_blacklist.txt"
+DASHBOARD_FILE = "output/dashboard_metrics.json"
 
 def load_existing_master():
     existing_ips = set()
@@ -18,11 +19,11 @@ def load_existing_master():
 def main():
     print("[1/3] Loading existing historical vectors from master repository...")
     master_set = load_existing_master()
-    initial_count = len(master_set)
-    print(f"[INFO] Current master database contains {initial_count} unique threats.")
 
-    # Gather incoming intelligence from all node JSON files
     incoming_ips = set()
+    node_dashboards = {}
+    total_global_dropped_packets = 0
+
     if os.path.exists(NODES_DIR):
         for filename in os.listdir(NODES_DIR):
             if filename.endswith(".json"):
@@ -30,36 +31,53 @@ def main():
                 try:
                     with open(file_path, "r") as f:
                         data = json.load(f)
-                        # Extract from deduplicated key structure
+                        
+                        # Identify the server identity dynamically via node_name or filename
+                        node_id = data.get("node_name", filename.replace("_threats.json", ""))
+                        metrics = data.get("node_metrics", {"dropped_packets": 0, "dropped_bytes": 0})
+                        
+                        # Structure per-node metrics
+                        node_dashboards[node_id] = {
+                            "packets_blocked": metrics.get("dropped_packets", 0),
+                            "bytes_saved": metrics.get("dropped_bytes", 0),
+                            "local_pool_size": metrics.get("local_pool_size", 0)
+                        }
+                        
+                        total_global_dropped_packets += metrics.get("dropped_packets", 0)
+
+                        # Gather raw intelligence for core deduplication
                         intel = data.get("intelligence", {})
                         ips = intel.get("combined_unique_members", [])
                         for ip in ips:
                             incoming_ips.add(ip.strip())
                 except Exception as e:
-                    print(f"[WARN] Failed to parse node telemetry {filename}: {e}")
+                    print(f"[WARN] Error parsing telemetry stream {filename}: {e}")
 
-    print(f"[2/3] Processed incoming telemetry. Found {len(incoming_ips)} total incoming vectors.")
-
-    # Filter out historical IPs to find only brand new threats
+    print(f"[2/3] Processing incoming vectors against master blacklist...")
     new_threats = incoming_ips - master_set
-    new_count = len(new_threats)
-    print(f"[SUCCESS] Validation Complete: Filtered out {len(incoming_ips) - new_count} duplicates. Found {new_count} brand new unique vectors.")
-
-    if new_count == 0:
-        print("[INFO] No new intelligence detected. Master manifest is already up to date.")
-        return
-
-    # Combine existing and new threats, then sort for structural uniformity
     updated_master_list = sorted(list(master_set | new_threats))
 
-    # Ensure output directory exists cleanly
+    # Ensure output structure is safe
     os.makedirs(os.path.dirname(MASTER_FILE), exist_ok=True)
-
     with open(MASTER_FILE, "w") as f:
         for ip in updated_master_list:
             f.write(f"{ip}\n")
 
-    print(f"[3/3] Centralized catalog rewritten successfully. Total global size: {len(updated_master_list)} IPs.")
+    # Construct the final central cluster dashboard object
+    unified_dashboard = {
+        "cluster_status": "OPERATIONAL",
+        "last_updated_utc": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "global_summary": {
+            "total_blacklisted_ips": len(updated_master_list),
+            "total_attacks_neutralized": total_global_dropped_packets
+        },
+        "per_node_telemetry": node_dashboards
+    }
+
+    with open(DASHBOARD_FILE, "w") as f:
+        json.dump(unified_dashboard, f, indent=4)
+
+    print(f"[3/3] Centralized metrics catalog synchronized. Global Blacklist Size: {len(updated_master_list)}")
 
 if __name__ == "__main__":
     main()
