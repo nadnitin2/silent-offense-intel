@@ -1,10 +1,10 @@
 name: SilentOffense Threat Intelligence Aggregator
 
 on:
-  push:
-    paths:
-      - 'nodes/**.json'
-  workflow_dispatch:
+  schedule:
+    # Triggers at minute 15 of every hour to seamlessly ingest node telemetry
+    - cron: '15 * * * *'
+  workflow_dispatch: # Allows you to manually click "Run workflow" from GitHub UI
 
 jobs:
   aggregate-threats:
@@ -16,53 +16,24 @@ jobs:
       - name: Checkout Repository Source
         uses: actions/checkout@v4
 
-      - name: Set up Python Environment
+      - name: Setup Standardized Python Environment
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Aggregate Edge Node Metrics
-        run: |
-          python -c "
-          import os
-          import json
-          
-          master_ips = set()
-          nodes_dir = 'nodes'
-          
-          if os.path.exists(nodes_dir):
-              for filename in os.listdir(nodes_dir):
-                  if filename.endswith('.json'):
-                      file_path = os.path.join(nodes_dir, filename)
-                      try:
-                          with open(file_path, 'r') as f:
-                              data = json.load(f)
-                              intelligence = data.get('intelligence', {})
-                              for set_name, set_data in intelligence.items():
-                                  members = set_data.get('members', [])
-                                  for ip in members:
-                                      if ip.strip():
-                                          master_ips.add(ip.strip())
-                      except Exception as e:
-                          print(f'Error reading {filename}: {e}')
-          
-          os.makedirs('output', exist_ok=True)
-          with open('output/master_blacklist.txt', 'w') as f:
-              for ip in sorted(master_ips):
-                  f.write(f'{ip}\n')
-                  
-          print(f'Successfully aggregated {len(master_ips)} unique high-risk threat vectors.')
-          "
+      - name: Execute Deduplication and Incremental Ingestion
+        run: python .github/scripts/aggregate.py
 
-      - name: Commit and Push Compiled Master Intelligence
+      - name: Commit Validated Dynamic Intelligence Delta
         run: |
-          git config --global user.name "SilentOffense Bot"
-          git config --global user.email "bot@silent-offense.local"
+          git config --global user.name "SilentOffense-Bot"
+          git config --global user.email "bot@silentoffense.local"
           git add output/master_blacklist.txt
           
-          if git diff --staged --quiet; then
-              echo "No new intelligence vectors discovered. System in idle state."
+          # Commit updates strictly if new unique threat vectors were extracted
+          if ! git diff --cached --quiet; then
+            git commit -m "Automated Sync: Filtered and appended new unique vectors [Skip CI]"
+            git push
           else
-              git commit -m "Auto-compiled global master threat database [Skip CI]"
-              git push
+            echo "Zero intelligence delta detected. Skipping push infrastructure matrix."
           fi
