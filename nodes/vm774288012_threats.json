@@ -1,9 +1,9 @@
 {
   "blacklist_sample_count": 25936,
-  "last_sync_utc": "2026-07-21 11:15:02 UTC",
+  "last_sync_utc": "2026-07-21 11:20:02 UTC",
   "node_metrics": {
-    "dropped_bytes": 1899520,
-    "dropped_packets": 34214,
+    "dropped_bytes": 1903616,
+    "dropped_packets": 34296,
     "local_pool_size": 25936
   },
   "node_name": "vm774288012"
