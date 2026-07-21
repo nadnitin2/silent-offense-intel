@@ -22,32 +22,16 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Ingest Remote Telemetry Payload Safely
+      - name: Process Ingested Payload Safely
         run: |
           mkdir -p nodes output
           
           NODE="${{ github.event.client_payload.node_name }}"
-          SYNC_TIME="${{ github.event.client_payload.last_sync_utc }}"
-          PKTS="${{ github.event.client_payload.node_metrics.dropped_packets }}"
-          BYTES="${{ github.event.client_payload.node_metrics.dropped_bytes }}"
-          POOL="${{ github.event.client_payload.node_metrics.local_pool_size }}"
           
+          # Only create/update file if payload contains actual unique elements array
           if [ -n "$NODE" ]; then
             echo "[INFO] Commencing payload stream injection for node: $NODE"
-            cat <<EOF > "nodes/${NODE}_threats.json"
-          {
-              "node_name": "$NODE",
-              "last_sync_utc": "$SYNC_TIME",
-              "node_metrics": {
-                  "dropped_packets": ${PKTS:-0},
-                  "dropped_bytes": ${BYTES:-0},
-                  "local_pool_size": ${POOL:-0}
-              },
-              "intelligence": {
-                  "combined_unique_members": []
-              }
-          }
-          EOF
+            echo '${{ toJson(github.event.client_payload) }}' > "nodes/${NODE}_threats.json"
           fi
 
       - name: Execute Native Aggregator Script
@@ -65,7 +49,7 @@ jobs:
           git config --global user.email "bot@silentoffense.local"
           
           git fetch origin main
-          git checkout origin/main -- output/dashboard_metrics.json output/blacklist.txt || true
+          git checkout origin/main -- output/dashboard_metrics.json output/master_blacklist.txt output/blacklist.txt || true
           
           git add nodes/*.json output/*.json output/*.txt
           
