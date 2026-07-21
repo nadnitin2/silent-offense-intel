@@ -1,9 +1,9 @@
 {
     "node_name": "vm774288012",
-    "last_sync_utc": "2026-07-21 06:50:02 UTC",
+    "last_sync_utc": "2026-07-21 06:55:02 UTC",
     "node_metrics": {
-        "dropped_packets": 26102,
-        "dropped_bytes": 1483776,
+        "dropped_packets": 26185,
+        "dropped_bytes": 1488896,
         "local_pool_size": 25936
     },
     "intelligence": {
