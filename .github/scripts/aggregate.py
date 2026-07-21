@@ -4,16 +4,18 @@ from datetime import datetime
 
 NODES_DIR = "nodes"
 MASTER_FILE = "output/master_blacklist.txt"
+PUBLIC_BLACKLIST_FILE = "output/blacklist.txt"
 DASHBOARD_FILE = "output/dashboard_metrics.json"
 
 def load_existing_master():
     existing_ips = set()
-    if os.path.exists(MASTER_FILE):
-        with open(MASTER_FILE, "r") as f:
-            for line in f:
-                ip = line.strip()
-                if ip:
-                    existing_ips.add(ip)
+    for file_path in [MASTER_FILE, PUBLIC_BLACKLIST_FILE]:
+        if os.path.exists(file_path):
+            with open(file_path, "r") as f:
+                for line in f:
+                    ip = line.strip()
+                    if ip and not ip.startswith("#"):
+                        existing_ips.add(ip)
     return existing_ips
 
 def main():
@@ -32,11 +34,9 @@ def main():
                     with open(file_path, "r") as f:
                         data = json.load(f)
                         
-                        # Identify the server identity dynamically via node_name or filename
                         node_id = data.get("node_name", filename.replace("_threats.json", ""))
                         metrics = data.get("node_metrics", {"dropped_packets": 0, "dropped_bytes": 0})
                         
-                        # Structure per-node metrics
                         node_dashboards[node_id] = {
                             "packets_blocked": metrics.get("dropped_packets", 0),
                             "bytes_saved": metrics.get("dropped_bytes", 0),
@@ -45,11 +45,11 @@ def main():
                         
                         total_global_dropped_packets += metrics.get("dropped_packets", 0)
 
-                        # Gather raw intelligence for core deduplication
                         intel = data.get("intelligence", {})
                         ips = intel.get("combined_unique_members", [])
                         for ip in ips:
-                            incoming_ips.add(ip.strip())
+                            if isinstance(ip, str) and ip.strip():
+                                incoming_ips.add(ip.strip())
                 except Exception as e:
                     print(f"[WARN] Error parsing telemetry stream {filename}: {e}")
 
@@ -57,13 +57,14 @@ def main():
     new_threats = incoming_ips - master_set
     updated_master_list = sorted(list(master_set | new_threats))
 
-    # Ensure output structure is safe
     os.makedirs(os.path.dirname(MASTER_FILE), exist_ok=True)
-    with open(MASTER_FILE, "w") as f:
-        for ip in updated_master_list:
-            f.write(f"{ip}\n")
+    
+    # Write to both master_blacklist.txt and public blacklist.txt
+    for target_file in [MASTER_FILE, PUBLIC_BLACKLIST_FILE]:
+        with open(target_file, "w") as f:
+            for ip in updated_master_list:
+                f.write(f"{ip}\n")
 
-    # Construct the final central cluster dashboard object
     unified_dashboard = {
         "cluster_status": "OPERATIONAL",
         "last_updated_utc": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
