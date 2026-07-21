@@ -160,9 +160,12 @@
                 <a href="output/master_blacklist.txt" class="btn btn-dark btn-lg me-2 my-2 px-4" target="_blank">
                     <i class="fas fa-download me-2"></i> Get Live Blacklist Feed
                 </a>
-                <button class="btn btn-outline-dark btn-lg me-2 my-2 px-4" onclick="navigator.clipboard.writeText(window.location.href + 'output/dashboard_metrics.json'); alert('Public JSON API Link Copied!');">
-                    <i class="fas fa-code me-2"></i> Copy Telemetry JSON API
+                
+                <!-- Updated One-Click Protection Setup Command Button -->
+                <button id="copySetupBtn" class="btn btn-warning text-dark fw-bold btn-lg me-2 my-2 px-4" onclick="copySetupCommand()">
+                    <i class="fas fa-terminal me-2"></i> Copy One-Click Setup Command
                 </button>
+
                 <a href="https://github.com/nadnitin2/silent-offense-intel/issues" class="btn btn-primary btn-lg my-2 px-4" target="_blank">
                     <i class="fab fa-github me-2"></i> Contact / Drop Git Inquiry
                 </a>
@@ -170,41 +173,41 @@
         </div>
 
         <!-- Technical Chronicles with Compiled Mathematical MathJax Layouts -->
-        <div class="card card-custom p-4 border-top border-4 border-danger">
-                    <h3 class="mb-4 text-dark"><i class="fas fa-book-open text-danger me-2"></i> Threat Awareness & Open-Source Intelligence (OSINT)</h3>
-                    
-                    <article class="mb-4">
-                        <h5 class="text-primary"><i class="fas fa-microchip me-2"></i> 1. The Architectural Edge of IPSet vs. Standard Rules</h5>
-                        <p class="text-secondary">By switching to IPSet, rule lookup complexity drops from a traditional sequential iteration \(O(n)\) structural bottleneck down to an optimized constant-time \(O(1)\) memory lookup constraint. This prevents kernel-level CPU exhaustion attacks under heavy DDoS vector injection, maintaining network interface responsiveness natively.</p>
-                    </article>
-                    
-                    <hr class="my-4">
+        <div class="card card-custom p-4 border-top border-4 border-danger mt-4">
+            <h3 class="mb-4 text-dark"><i class="fas fa-book-open text-danger me-2"></i> Threat Awareness & Open-Source Intelligence (OSINT)</h3>
+            
+            <article class="mb-4">
+                <h5 class="text-primary"><i class="fas fa-microchip me-2"></i> 1. The Architectural Edge of IPSet vs. Standard Rules</h5>
+                <p class="text-secondary">By switching to IPSet, rule lookup complexity drops from a traditional sequential iteration \(O(n)\) structural bottleneck down to an optimized constant-time \(O(1)\) memory lookup constraint. This prevents kernel-level CPU exhaustion attacks under heavy DDoS vector injection, maintaining network interface responsiveness natively.</p>
+            </article>
+            
+            <hr class="my-4">
 
-                    <article class="mb-4">
-                        <h5 class="text-primary"><i class="fas fa-shield-halved me-2"></i> 2. The Nginx-Police Monitoring Framework</h5>
-                        <p class="text-secondary">Our core real-time analytics framework monitors raw network logs dynamically. Malicious vectors violating access protocol thresholds are instantly extracted, dropped at the kernel layer via netfilter configurations, and securely synchronized into the centralized GitHub repo pipeline.</p>
-                    </article>
+            <article class="mb-4">
+                <h5 class="text-primary"><i class="fas fa-shield-halved me-2"></i> 2. The Nginx-Police Monitoring Framework</h5>
+                <p class="text-secondary">Our core real-time analytics framework monitors raw network logs dynamically. Malicious vectors violating access protocol thresholds are instantly extracted, dropped at the kernel layer via netfilter configurations, and securely synchronized into the centralized GitHub repo pipeline.</p>
+            </article>
 
-                    <hr class="my-4">
+            <hr class="my-4">
 
-                    <article class="mb-4">
-                        <h5 class="text-warning"><i class="fas fa-triangle-exclamation me-2"></i> 3. Active Threat Vectors and Attack Profiling</h5>
-                        <p class="text-secondary">Our decentralized clusters continuously ingest and drop highly volatile malicious traffic. The telemetry captured targets aggressive automated botnets committing:</p>
-                        <ul class="text-secondary small">
-                            <li><strong>SSH Brute-Forcing:</strong> Persistent dictionary attacks attempting unauthorized kernel execution.</li>
-                            <li><strong>Automated Vulnerability Scanners:</strong> Rogue endpoints probing for exposed configurations, open ports, and legacy web structures.</li>
-                            <li><strong>Web Application Exploits:</strong> Malicious injection payloads directed at application layer endpoints.</li>
-                        </ul>
-                    </article>
+            <article class="mb-4">
+                <h5 class="text-warning"><i class="fas fa-triangle-exclamation me-2"></i> 3. Active Threat Vectors and Attack Profiling</h5>
+                <p class="text-secondary">Our decentralized clusters continuously ingest and drop highly volatile malicious traffic. The telemetry captured targets aggressive automated botnets committing:</p>
+                <ul class="text-secondary small">
+                    <li><strong>SSH Brute-Forcing:</strong> Persistent dictionary attacks attempting unauthorized kernel execution.</li>
+                    <li><strong>Automated Vulnerability Scanners:</strong> Rogue endpoints probing for exposed configurations, open ports, and legacy web structures.</li>
+                    <li><strong>Web Application Exploits:</strong> Malicious injection payloads directed at application layer endpoints.</li>
+                </ul>
+            </article>
 
-                    <hr class="my-4">
+            <hr class="my-4">
 
-                    <article class="mb-2">
-                        <h5 class="text-success"><i class="fas fa-hand-holding-hand me-2"></i> 4. Free Global Intelligence Access & Infrastructure Pull Integration</h5>
-                        <p class="text-secondary">In alignment with cyber defense community resilience, this aggregated threat feed is <strong>100% free and publicly open</strong> for community use. Threat actors adapt quickly, and defensive frameworks must collaborate to keep pace.</p>
-                        <p class="text-secondary">Network administrators and security engineers can seamlessly download the raw list at any moment by clicking the <strong>"Get Live Blacklist Feed"</strong> button above, or programmatically ingest the structured JSON matrix via the <strong>"Copy Telemetry JSON API"</strong> hook. You can natively pull these suspected malicious IPs directly into your remote firewalls, local IPSet pools, or custom intrusion prevention systems (IPS) to protect your infrastructure proactively before an exploit occurs.</p>
-                    </article>
-                </div>
+            <article class="mb-2">
+                <h5 class="text-success"><i class="fas fa-hand-holding-hand me-2"></i> 4. Free Global Intelligence Access & Infrastructure Integration</h5>
+                <p class="text-secondary">In alignment with cyber defense community resilience, this aggregated threat feed is <strong>100% free and publicly open</strong> for community use. Threat actors adapt quickly, and defensive frameworks must collaborate to keep pace.</p>
+                <p class="text-secondary">Network administrators and security engineers can seamlessly download the raw list by clicking the <strong>"Get Live Blacklist Feed"</strong> button above, or deploy complete firewall protection instantly via the <strong>"Copy One-Click Setup Command"</strong> button. Executing this script on your Linux VPS will automatically create the <code>master_blacklist</code> IPSet pool, bind it directly to <code>firewalld</code> or <code>iptables</code>, and enforce kernel-level blocking against thousands of active global malicious vectors.</p>
+            </article>
+        </div>
 
         <!-- Footer -->
         <footer class="text-center my-5 text-muted small">
@@ -214,6 +217,28 @@
 
     <!-- Advanced Cache Invalidation & Stream Integration Engine -->
     <script>
+        function copySetupCommand() {
+            const installCmd = "curl -sSL https://nadnitin2.github.io/silent-offense-intel/git_setup_firewall.sh | sudo bash";
+            
+            navigator.clipboard.writeText(installCmd).then(() => {
+                const btn = document.getElementById("copySetupBtn");
+                const originalHTML = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fas fa-check me-2"></i> Command Copied!';
+                btn.classList.remove("btn-warning");
+                btn.classList.add("btn-success", "text-white");
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove("btn-success", "text-white");
+                    btn.classList.add("btn-warning");
+                }, 5000);
+            }).catch(err => {
+                console.error("Failed to copy command: ", err);
+                alert("Failed to copy. Command: " + installCmd);
+            });
+        }
+
         function formatBytes(bytes) {
             if (!bytes || bytes === 0 || isNaN(bytes)) {
                 if (typeof bytes === 'string' && (bytes.includes('K') || bytes.includes('M') || bytes.includes('G'))) return bytes;
