@@ -1,77 +1,22 @@
-name: Automated Threat Intelligence Aggregator Pipeline
-
-on:
-  repository_dispatch:
-    types: [node_telemetry_sync]
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  aggregate_and_deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository Components
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Python Environment
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Ingest Remote Telemetry Payload Safely
-        run: |
-          mkdir -p nodes output
-          
-          # Map incoming repository dispatch matrix into secure shell boundaries
-          NODE="${{ github.event.client_payload.node_name }}"
-          SYNC_TIME="${{ github.event.client_payload.last_sync_utc }}"
-          PKTS="${{ github.event.client_payload.node_metrics.dropped_packets }}"
-          BYTES="${{ github.event.client_payload.node_metrics.dropped_bytes }}"
-          POOL="${{ github.event.client_payload.node_metrics.local_pool_size }}"
-          
-          if [ -n "$NODE" ]; then
-            echo "[INFO] Commencing payload stream injection for node: $NODE"
-            cat <<EOF > "nodes/${NODE}_threats.json"
-          {
-              "node_name": "$NODE",
-              "last_sync_utc": "$SYNC_TIME",
-              "node_metrics": {
-                  "dropped_packets": ${PKTS:-0},
-                  "dropped_bytes": ${BYTES:-0},
-                  "local_pool_size": ${POOL:-0}
-              },
-              "intelligence": {
-                  "combined_unique_members": []
-              }
-          }
-          EOF
-          fi
-
-      - name: Execute Native Aggregator Script
-        run: |
-          if [ -f ".github/scripts/aggregate.py" ]; then
-            python .github/scripts/aggregate.py
-          else
-            echo "[ERROR] Pipeline logic fault: aggregate.py script instance is missing!"
-            exit 1
-          fi
-
-      - name: Commit and Push Compiled Assets back to Repository
+- name: Commit and Push Compiled Assets back to Repository
         run: |
           git config --global user.name "SilentOffense-Bot"
           git config --global user.email "bot@silentoffense.local"
+          
+          # Fetch latest remote changes and force overwrite local generated assets cleanly
+          git fetch origin main
+          git checkout origin/main -- output/dashboard_metrics.json output/blacklist.txt || true
+          
           git add nodes/*.json output/*.json output/*.txt
           
           if ! git diff --cached --quiet; then
             git commit -m "Automated Sync: Multi-node metrics dashboard and blacklist updated [Skip CI]"
             
-            # Fetch and rebase safely before pushing to eliminate branch sync conflicts
-            git pull --rebase origin main
-            git push origin main
+            # Retry mechanism for smooth concurrent pushes without merge conflict failure
+            for i in {1..3}; do
+              git pull --strategy-option=theirs --no-rebase origin main && git push origin main && break
+              sleep 2
+            done
           else
             echo "[INFO] Telemetry matrix aligns with current state. Skipping operations deployment."
           fi
