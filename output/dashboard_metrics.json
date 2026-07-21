@@ -1,9 +1,9 @@
 {
     "cluster_status": "OPERATIONAL",
-    "last_updated_utc": "2026-07-21 06:05:10 UTC",
+    "last_updated_utc": "2026-07-21 06:10:09 UTC",
     "global_summary": {
         "total_blacklisted_ips": 22615,
-        "total_attacks_neutralized": 36429
+        "total_attacks_neutralized": 36507
     },
     "per_node_telemetry": {
         "vm774288012": {
@@ -12,8 +12,8 @@
             "local_pool_size": 25936
         },
         "e2e-32-133": {
-            "packets_blocked": 11107,
-            "bytes_saved": 562176,
+            "packets_blocked": 11148,
+            "bytes_saved": 564224,
             "local_pool_size": 22756
         }
     }
