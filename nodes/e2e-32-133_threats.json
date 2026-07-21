@@ -1,9 +1,9 @@
 {
   "blacklist_sample_count": 22253,
-  "last_sync_utc": "2026-07-21 11:15:07 UTC",
+  "last_sync_utc": "2026-07-21 11:15:01 UTC",
   "node_metrics": {
     "dropped_bytes": 1635328,
-    "dropped_packets": 23783,
+    "dropped_packets": 23779,
     "local_pool_size": 22253
   },
   "node_name": "e2e-32-133"
