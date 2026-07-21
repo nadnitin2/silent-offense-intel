@@ -3,12 +3,12 @@
     "last_updated_utc": "2026-07-21 06:00:09 UTC",
     "global_summary": {
         "total_blacklisted_ips": 22615,
-        "total_attacks_neutralized": 36254
+        "total_attacks_neutralized": 36283
     },
     "per_node_telemetry": {
         "vm774288012": {
-            "packets_blocked": 25184,
-            "bytes_saved": 1432576,
+            "packets_blocked": 25256,
+            "bytes_saved": 1436672,
             "local_pool_size": 25936
         },
         "e2e-32-133": {
