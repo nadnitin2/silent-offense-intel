@@ -1,12 +1,10 @@
 {
-    "node_name": "vm774288012",
-    "last_sync_utc": "2026-07-21 11:10:01 UTC",
-    "node_metrics": {
-        "dropped_packets": 34130,
-        "dropped_bytes": 1895424,
-        "local_pool_size": 25936
-    },
-    "intelligence": {
-        "combined_unique_members": []
-    }
+  "blacklist_sample_count": 25936,
+  "last_sync_utc": "2026-07-21 11:15:02 UTC",
+  "node_metrics": {
+    "dropped_bytes": 1899520,
+    "dropped_packets": 34214,
+    "local_pool_size": 25936
+  },
+  "node_name": "vm774288012"
 }
