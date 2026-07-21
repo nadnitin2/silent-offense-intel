@@ -1,9 +1,9 @@
 {
     "node_name": "e2e-32-133",
-    "last_sync_utc": "2026-07-21 05:15:01 UTC",
+    "last_sync_utc": "2026-07-21 05:20:02 UTC",
     "node_metrics": {
-        "dropped_packets": 10597,
-        "dropped_bytes": 536576,
+        "dropped_packets": 10629,
+        "dropped_bytes": 537600,
         "local_pool_size": 22756
     },
     "intelligence": {
