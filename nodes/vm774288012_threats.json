@@ -1,9 +1,9 @@
 {
     "node_name": "vm774288012",
-    "last_updated": "2026-07-26 10:15:04 UTC",
+    "last_updated": "2026-07-26 10:20:04 UTC",
     "node_metrics": {
-        "dropped_packets": 161409,
-        "dropped_bytes": 8726663,
+        "dropped_packets": 161465,
+        "dropped_bytes": 8729418,
         "local_pool_size": 26163
     },
     "ips": [
