@@ -1,22 +1,22 @@
 {
     "cluster_status": "OPERATIONAL",
-    "last_updated_utc": "2026-07-30 20:15:16 UTC",
+    "last_updated_utc": "2026-07-30 20:20:20 UTC",
     "global_summary": {
         "total_blacklisted_ips": 55550,
-        "total_attacks_neutralized": 733066
+        "total_attacks_neutralized": 733265
     },
     "per_node_telemetry": {
         "e2e-32-133": {
-            "packets_blocked": 476140,
-            "bytes_saved": 26626119,
+            "packets_blocked": 476339,
+            "bytes_saved": 26637446,
             "local_pool_size": 18990,
-            "last_sync_utc": "2026-07-30 20:15:16 UTC"
+            "last_sync_utc": "2026-07-30 20:20:20 UTC"
         },
         "vm774288012": {
             "packets_blocked": 256926,
             "bytes_saved": 13790361,
             "local_pool_size": 26291,
-            "last_sync_utc": "2026-07-30 20:15:16 UTC"
+            "last_sync_utc": "2026-07-30 20:20:20 UTC"
         }
     }
 }
