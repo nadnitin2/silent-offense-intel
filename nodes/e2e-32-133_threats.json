@@ -1,9 +1,9 @@
 {
     "node_name": "e2e-32-133",
-    "last_updated": "2026-09-10 12:05:02 UTC",
+    "last_updated": "2026-09-10 12:10:02 UTC",
     "node_metrics": {
-        "dropped_packets": 3096298,
-        "dropped_bytes": 177872292,
+        "dropped_packets": 3096346,
+        "dropped_bytes": 177875007,
         "local_pool_size": 23187
     },
     "ips": [
